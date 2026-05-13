@@ -8,8 +8,8 @@ A repository containing the code used for the bachelor thesis presented by Thoma
 
 ### 1) Clone the repository and enter the project folder
 ```bash
-git clone <link>
-cd <name>
+git clone https://github.com/ThomasBroholtKnudsen/BSDSBachelorProject2026.git
+cd BSDSBachelorProject2026
 ```
 
 ### 2) Install dependencies from requirements.txt
@@ -65,8 +65,6 @@ project_root/
 │  ├─ distance_calculation.py  # candidate–voter distance and top-N matching
 │  ├─ match_change.py       # voter travel / match-switch analysis
 │  ├─ pca.py                # PCA analysis and plots
-│  ├─ clustering.py         # k-means clustering analysis
-│  ├─ statistical_tests.py  # chi-squared tests across alpha values
 │  ├─ plots.py              # all visualisations
 │  └─ utils.py              # shared helpers (data loading, CI computation, etc.)
 │
