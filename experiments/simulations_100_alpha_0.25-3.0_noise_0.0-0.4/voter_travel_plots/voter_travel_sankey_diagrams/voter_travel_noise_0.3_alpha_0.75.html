@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="utf-8">
+    <style>
+    body { font-family: sans-serif; background: white; margin: 20px; }
+    h2 { font-size: 16px; font-weight: bold; margin-bottom: 12px; }
+    #controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+    .party-btn {
+        padding: 5px 12px; border: 2px solid #ccc; border-radius: 4px;
+        cursor: pointer; font-size: 12px; background: white;
+        transition: all 0.2s; white-space: nowrap;
+    }
+    .party-btn.active { color: white; }
+    .link { fill: none; }
+    .node-label { font-size: 13px; dominant-baseline: middle; }
+    .pct-label { font-size: 13px; dominant-baseline: middle; font-weight: bold; }
+    .tooltip {
+        position: fixed; background: rgba(0,0,0,0.75); color: white;
+        padding: 6px 10px; border-radius: 4px; font-size: 12px;
+        pointer-events: none; display: none; z-index: 10;
+    }
+    </style>
+    </head>
+    <body>
+    <h2>Voter Flow (mean across simulations) — alpha = 0.75, noise = 0.3</h2>
+    <div id="controls"></div>
+    <div class="tooltip" id="tooltip"></div>
+    <svg id="chart"></svg>
+
+    <script>
+    const data = [{"from_party": "Alternativet", "to_party": "Alternativet", "count": 0.44939322916666663, "relative": 0.44939322916666663, "se": 0.00594707625576141}, {"from_party": "Alternativet", "to_party": "Borgernes Parti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Alternativet", "to_party": "Danmarksdemokraterne", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Alternativet", "to_party": "Dansk Folkeparti", "count": 0.00015625, "relative": 0.00015625, "se": 0.00015624999999999998}, {"from_party": "Alternativet", "to_party": "Enhedslisten", "count": 0.18598697916666662, "relative": 0.18598697916666662, "se": 0.005128874490916477}, {"from_party": "Alternativet", "to_party": "Konservative", "count": 0.00109375, "relative": 0.00109375, "se": 0.0004006756249628794}, {"from_party": "Alternativet", "to_party": "Liberal Alliance", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Alternativet", "to_party": "Moderaterne", "count": 0.002421875, "relative": 0.002421875, "se": 0.0005948268245725477}, {"from_party": "Alternativet", "to_party": "Radikale Venstre", "count": 0.09771354166666667, "relative": 0.09771354166666667, "se": 0.003700734235971817}, {"from_party": "Alternativet", "to_party": "SF", "count": 0.21237499999999998, "relative": 0.21237499999999998, "se": 0.0052954409273850925}, {"from_party": "Alternativet", "to_party": "Socialdemokratiet", "count": 0.04026041666666666, "relative": 0.04026041666666666, "se": 0.002102780394348078}, {"from_party": "Alternativet", "to_party": "Uden for parti", "count": 0.009505208333333333, "relative": 0.009505208333333333, "se": 0.0011032256239815643}, {"from_party": "Alternativet", "to_party": "Venstre", "count": 0.00109375, "relative": 0.00109375, "se": 0.0004581072961907857}, {"from_party": "Borgernes Parti", "to_party": "Alternativet", "count": 6.289308176100629e-05, "relative": 6.289308176100629e-05, "se": 6.289308176100629e-05}, {"from_party": "Borgernes Parti", "to_party": "Borgernes Parti", "count": 0.429156558849955, "relative": 0.429156558849955, "se": 0.006332001422604561}, {"from_party": "Borgernes Parti", "to_party": "Danmarksdemokraterne", "count": 0.09278301886792453, "relative": 0.09278301886792453, "se": 0.004070879615536682}, {"from_party": "Borgernes Parti", "to_party": "Dansk Folkeparti", "count": 0.3305211141060198, "relative": 0.3305211141060198, "se": 0.006124242434452766}, {"from_party": "Borgernes Parti", "to_party": "Enhedslisten", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Borgernes Parti", "to_party": "Konservative", "count": 0.06353616352201258, "relative": 0.06353616352201258, "se": 0.002701285331597092}, {"from_party": "Borgernes Parti", "to_party": "Liberal Alliance", "count": 0.048940251572327044, "relative": 0.048940251572327044, "se": 0.002901843882951709}, {"from_party": "Borgernes Parti", "to_party": "Moderaterne", "count": 0.0007547169811320754, "relative": 0.0007547169811320754, "se": 0.0003465610625658488}, {"from_party": "Borgernes Parti", "to_party": "Radikale Venstre", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Borgernes Parti", "to_party": "SF", "count": 0.00044025157232704395, "relative": 0.00044025157232704395, "se": 0.0002719496396954337}, {"from_party": "Borgernes Parti", "to_party": "Socialdemokratiet", "count": 0.002154088050314465, "relative": 0.002154088050314465, "se": 0.0006766175226889131}, {"from_party": "Borgernes Parti", "to_party": "Uden for parti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Borgernes Parti", "to_party": "Venstre", "count": 0.031650943396226414, "relative": 0.031650943396226414, "se": 0.002304634121673317}, {"from_party": "Danmarksdemokraterne", "to_party": "Alternativet", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Danmarksdemokraterne", "to_party": "Borgernes Parti", "count": 0.03871875, "relative": 0.03871875, "se": 0.0015188403206336356}, {"from_party": "Danmarksdemokraterne", "to_party": "Danmarksdemokraterne", "count": 0.7733506944444443, "relative": 0.7733506944444443, "se": 0.0035020141261048764}, {"from_party": "Danmarksdemokraterne", "to_party": "Dansk Folkeparti", "count": 0.08999421296296294, "relative": 0.08999421296296294, "se": 0.0021827788459002047}, {"from_party": "Danmarksdemokraterne", "to_party": "Enhedslisten", "count": 6.944444444444443e-05, "relative": 6.944444444444443e-05, "se": 6.944444444444442e-05}, {"from_party": "Danmarksdemokraterne", "to_party": "Konservative", "count": 0.05167824074074075, "relative": 0.05167824074074075, "se": 0.0017586165223054367}, {"from_party": "Danmarksdemokraterne", "to_party": "Liberal Alliance", "count": 0.01896064814814815, "relative": 0.01896064814814815, "se": 0.0009826056812515585}, {"from_party": "Danmarksdemokraterne", "to_party": "Moderaterne", "count": 0.0008680555555555558, "relative": 0.0008680555555555558, "se": 0.000248603900477918}, {"from_party": "Danmarksdemokraterne", "to_party": "Radikale Venstre", "count": 6.944444444444443e-05, "relative": 6.944444444444443e-05, "se": 4.885600490843391e-05}, {"from_party": "Danmarksdemokraterne", "to_party": "SF", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Danmarksdemokraterne", "to_party": "Socialdemokratiet", "count": 0.0032928240740740743, "relative": 0.0032928240740740743, "se": 0.0004314731841899987}, {"from_party": "Danmarksdemokraterne", "to_party": "Uden for parti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Danmarksdemokraterne", "to_party": "Venstre", "count": 0.022997685185185194, "relative": 0.022997685185185194, "se": 0.0011912439639911877}, {"from_party": "Dansk Folkeparti", "to_party": "Alternativet", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Dansk Folkeparti", "to_party": "Borgernes Parti", "count": 0.08340528634361233, "relative": 0.08340528634361233, "se": 0.0018086429257953291}, {"from_party": "Dansk Folkeparti", "to_party": "Danmarksdemokraterne", "count": 0.06832672540381791, "relative": 0.06832672540381791, "se": 0.0018551965932531059}, {"from_party": "Dansk Folkeparti", "to_party": "Dansk Folkeparti", "count": 0.8147687224669604, "relative": 0.8147687224669604, "se": 0.0027242673785748857}, {"from_party": "Dansk Folkeparti", "to_party": "Enhedslisten", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Dansk Folkeparti", "to_party": "Konservative", "count": 0.026370044052863438, "relative": 0.026370044052863438, "se": 0.0011978905774613171}, {"from_party": "Dansk Folkeparti", "to_party": "Liberal Alliance", "count": 0.0017327459618208516, "relative": 0.0017327459618208516, "se": 0.00024507608046696935}, {"from_party": "Dansk Folkeparti", "to_party": "Moderaterne", "count": 4.405286343612335e-05, "relative": 4.405286343612335e-05, "se": 4.405286343612336e-05}, {"from_party": "Dansk Folkeparti", "to_party": "Radikale Venstre", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Dansk Folkeparti", "to_party": "SF", "count": 6.607929515418503e-05, "relative": 6.607929515418503e-05, "se": 4.905319457128056e-05}, {"from_party": "Dansk Folkeparti", "to_party": "Socialdemokratiet", "count": 0.0020998531571218794, "relative": 0.0020998531571218794, "se": 0.0002970080113951346}, {"from_party": "Dansk Folkeparti", "to_party": "Uden for parti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Dansk Folkeparti", "to_party": "Venstre", "count": 0.0031864904552129213, "relative": 0.0031864904552129213, "se": 0.0004171944991779301}, {"from_party": "Enhedslisten", "to_party": "Alternativet", "count": 0.15224231464737792, "relative": 0.15224231464737792, "se": 0.0030318906312586146}, {"from_party": "Enhedslisten", "to_party": "Borgernes Parti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Enhedslisten", "to_party": "Danmarksdemokraterne", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Enhedslisten", "to_party": "Dansk Folkeparti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Enhedslisten", "to_party": "Enhedslisten", "count": 0.6642695901145268, "relative": 0.6642695901145268, "se": 0.0040451718925344545}, {"from_party": "Enhedslisten", "to_party": "Konservative", "count": 0.0002531645569620253, "relative": 0.0002531645569620253, "se": 0.00012464961111831167}, {"from_party": "Enhedslisten", "to_party": "Liberal Alliance", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Enhedslisten", "to_party": "Moderaterne", "count": 8.438818565400843e-05, "relative": 8.438818565400843e-05, "se": 6.651224551152001e-05}, {"from_party": "Enhedslisten", "to_party": "Radikale Venstre", "count": 0.02115506329113924, "relative": 0.02115506329113924, "se": 0.0011257723763325681}, {"from_party": "Enhedslisten", "to_party": "SF", "count": 0.1536305003013864, "relative": 0.1536305003013864, "se": 0.00299473820654051}, {"from_party": "Enhedslisten", "to_party": "Socialdemokratiet", "count": 0.007241561181434598, "relative": 0.007241561181434598, "se": 0.0006675200353106643}, {"from_party": "Enhedslisten", "to_party": "Uden for parti", "count": 0.0011234177215189872, "relative": 0.0011234177215189872, "se": 0.00023937880473258376}, {"from_party": "Enhedslisten", "to_party": "Venstre", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Konservative", "to_party": "Alternativet", "count": 0.0006578947368421052, "relative": 0.0006578947368421052, "se": 0.000168835050715631}, {"from_party": "Konservative", "to_party": "Borgernes Parti", "count": 0.027948245614035087, "relative": 0.027948245614035087, "se": 0.0012025725072620978}, {"from_party": "Konservative", "to_party": "Danmarksdemokraterne", "count": 0.03262456140350877, "relative": 0.03262456140350877, "se": 0.001291071315867027}, {"from_party": "Konservative", "to_party": "Dansk Folkeparti", "count": 0.024685964912280704, "relative": 0.024685964912280704, "se": 0.0011496142113897475}, {"from_party": "Konservative", "to_party": "Enhedslisten", "count": 5.2631578947368404e-05, "relative": 5.2631578947368404e-05, "se": 5.263157894736841e-05}, {"from_party": "Konservative", "to_party": "Konservative", "count": 0.6621114035087718, "relative": 0.6621114035087718, "se": 0.0029328817756141324}, {"from_party": "Konservative", "to_party": "Liberal Alliance", "count": 0.03938333333333333, "relative": 0.03938333333333333, "se": 0.0013118592463319354}, {"from_party": "Konservative", "to_party": "Moderaterne", "count": 0.024655263157894732, "relative": 0.024655263157894732, "se": 0.001082483450416043}, {"from_party": "Konservative", "to_party": "Radikale Venstre", "count": 0.015203508771929825, "relative": 0.015203508771929825, "se": 0.0007484735069894174}, {"from_party": "Konservative", "to_party": "SF", "count": 0.0019736842105263154, "relative": 0.0019736842105263154, "se": 0.0003203965721684418}, {"from_party": "Konservative", "to_party": "Socialdemokratiet", "count": 0.03559473684210526, "relative": 0.03559473684210526, "se": 0.001340480473651034}, {"from_party": "Konservative", "to_party": "Uden for parti", "count": 0.00015789473684210524, "relative": 0.00015789473684210524, "se": 9.023505684092906e-05}, {"from_party": "Konservative", "to_party": "Venstre", "count": 0.13495087719298243, "relative": 0.13495087719298243, "se": 0.002458376086822221}, {"from_party": "Liberal Alliance", "to_party": "Alternativet", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Liberal Alliance", "to_party": "Borgernes Parti", "count": 0.005562678062678061, "relative": 0.005562678062678061, "se": 0.0004379149954337031}, {"from_party": "Liberal Alliance", "to_party": "Danmarksdemokraterne", "count": 0.008644586894586892, "relative": 0.008644586894586892, "se": 0.0006307273200713182}, {"from_party": "Liberal Alliance", "to_party": "Dansk Folkeparti", "count": 0.0008903133903133901, "relative": 0.0008903133903133901, "se": 0.0001976998787978765}, {"from_party": "Liberal Alliance", "to_party": "Enhedslisten", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Liberal Alliance", "to_party": "Konservative", "count": 0.02950925925925926, "relative": 0.02950925925925926, "se": 0.0010517116686949433}, {"from_party": "Liberal Alliance", "to_party": "Liberal Alliance", "count": 0.9215861823361822, "relative": 0.9215861823361822, "se": 0.0018100660733191315}, {"from_party": "Liberal Alliance", "to_party": "Moderaterne", "count": 0.00032051282051282046, "relative": 0.00032051282051282046, "se": 0.00012659424239845347}, {"from_party": "Liberal Alliance", "to_party": "Radikale Venstre", "count": 4.273504273504274e-05, "relative": 4.273504273504274e-05, "se": 4.273504273504272e-05}, {"from_party": "Liberal Alliance", "to_party": "SF", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Liberal Alliance", "to_party": "Socialdemokratiet", "count": 9.971509971509969e-05, "relative": 9.971509971509969e-05, "se": 6.15954312130683e-05}, {"from_party": "Liberal Alliance", "to_party": "Uden for parti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Liberal Alliance", "to_party": "Venstre", "count": 0.03334401709401709, "relative": 0.03334401709401709, "se": 0.001178274471249269}, {"from_party": "Moderaterne", "to_party": "Alternativet", "count": 0.0015198618307426595, "relative": 0.0015198618307426595, "se": 0.0002672593938022772}, {"from_party": "Moderaterne", "to_party": "Borgernes Parti", "count": 0.00025906735751295336, "relative": 0.00025906735751295336, "se": 0.0001134937375946064}, {"from_party": "Moderaterne", "to_party": "Danmarksdemokraterne", "count": 0.00022452504317789287, "relative": 0.00022452504317789287, "se": 0.00010314607292555506}, {"from_party": "Moderaterne", "to_party": "Dansk Folkeparti", "count": 5.181347150259069e-05, "relative": 5.181347150259069e-05, "se": 5.181347150259068e-05}, {"from_party": "Moderaterne", "to_party": "Enhedslisten", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Moderaterne", "to_party": "Konservative", "count": 0.03000345423143351, "relative": 0.03000345423143351, "se": 0.0012047838531277387}, {"from_party": "Moderaterne", "to_party": "Liberal Alliance", "count": 0.00046632124352331605, "relative": 0.00046632124352331605, "se": 0.00014440700592339477}, {"from_party": "Moderaterne", "to_party": "Moderaterne", "count": 0.7945811744386873, "relative": 0.7945811744386873, "se": 0.0030364296056825933}, {"from_party": "Moderaterne", "to_party": "Radikale Venstre", "count": 0.07506390328151986, "relative": 0.07506390328151986, "se": 0.0016359802717274084}, {"from_party": "Moderaterne", "to_party": "SF", "count": 0.0017184801381692574, "relative": 0.0017184801381692574, "se": 0.000267083180812058}, {"from_party": "Moderaterne", "to_party": "Socialdemokratiet", "count": 0.06134455958549223, "relative": 0.06134455958549223, "se": 0.0016211438258280184}, {"from_party": "Moderaterne", "to_party": "Uden for parti", "count": 0.0002590673575129533, "relative": 0.0002590673575129533, "se": 0.00011349373759460637}, {"from_party": "Moderaterne", "to_party": "Venstre", "count": 0.03450777202072539, "relative": 0.03450777202072539, "se": 0.0012546592421980864}, {"from_party": "Radikale Venstre", "to_party": "Alternativet", "count": 0.055459770114942526, "relative": 0.055459770114942526, "se": 0.001982642934415442}, {"from_party": "Radikale Venstre", "to_party": "Borgernes Parti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Radikale Venstre", "to_party": "Danmarksdemokraterne", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Radikale Venstre", "to_party": "Dansk Folkeparti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Radikale Venstre", "to_party": "Enhedslisten", "count": 0.01217241379310345, "relative": 0.01217241379310345, "se": 0.0008445086361078789}, {"from_party": "Radikale Venstre", "to_party": "Konservative", "count": 0.008988505747126436, "relative": 0.008988505747126436, "se": 0.0007151859314641488}, {"from_party": "Radikale Venstre", "to_party": "Liberal Alliance", "count": 6.896551724137934e-05, "relative": 6.896551724137934e-05, "se": 6.896551724137935e-05}, {"from_party": "Radikale Venstre", "to_party": "Moderaterne", "count": 0.05990459770114942, "relative": 0.05990459770114942, "se": 0.001971950498325855}, {"from_party": "Radikale Venstre", "to_party": "Radikale Venstre", "count": 0.7372057471264368, "relative": 0.7372057471264368, "se": 0.0036948660962167037}, {"from_party": "Radikale Venstre", "to_party": "SF", "count": 0.030310344827586207, "relative": 0.030310344827586207, "se": 0.0013016986679429824}, {"from_party": "Radikale Venstre", "to_party": "Socialdemokratiet", "count": 0.08556206896551725, "relative": 0.08556206896551725, "se": 0.0026811552134365126}, {"from_party": "Radikale Venstre", "to_party": "Uden for parti", "count": 0.007068965517241379, "relative": 0.007068965517241379, "se": 0.0006490576076081157}, {"from_party": "Radikale Venstre", "to_party": "Venstre", "count": 0.0032586206896551726, "relative": 0.0032586206896551726, "se": 0.0004687568685764927}, {"from_party": "SF", "to_party": "Alternativet", "count": 0.11067068965517242, "relative": 0.11067068965517242, "se": 0.0017114500945471466}, {"from_party": "SF", "to_party": "Borgernes Parti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "SF", "to_party": "Danmarksdemokraterne", "count": 3.448275862068965e-05, "relative": 3.448275862068965e-05, "se": 3.4482758620689657e-05}, {"from_party": "SF", "to_party": "Dansk Folkeparti", "count": 3.4482758620689657e-05, "relative": 3.4482758620689657e-05, "se": 3.448275862068966e-05}, {"from_party": "SF", "to_party": "Enhedslisten", "count": 0.09825402298850575, "relative": 0.09825402298850575, "se": 0.001646756038538135}, {"from_party": "SF", "to_party": "Konservative", "count": 0.001528735632183908, "relative": 0.001528735632183908, "se": 0.0002176930686143532}, {"from_party": "SF", "to_party": "Liberal Alliance", "count": 1.7241379310344835e-05, "relative": 1.7241379310344835e-05, "se": 1.724137931034484e-05}, {"from_party": "SF", "to_party": "Moderaterne", "count": 0.00045977011494252877, "relative": 0.00045977011494252877, "se": 0.00011752582945874606}, {"from_party": "SF", "to_party": "Radikale Venstre", "count": 0.042926436781609185, "relative": 0.042926436781609185, "se": 0.0013360826237545575}, {"from_party": "SF", "to_party": "SF", "count": 0.6306275862068965, "relative": 0.6306275862068965, "se": 0.0028811994994589205}, {"from_party": "SF", "to_party": "Socialdemokratiet", "count": 0.11453850574712643, "relative": 0.11453850574712643, "se": 0.0018403115536905518}, {"from_party": "SF", "to_party": "Uden for parti", "count": 0.0005977011494252873, "relative": 0.0005977011494252873, "se": 0.0001433399013672501}, {"from_party": "SF", "to_party": "Venstre", "count": 0.0003103448275862069, "relative": 0.0003103448275862069, "se": 9.918051422919355e-05}, {"from_party": "Socialdemokratiet", "to_party": "Alternativet", "count": 0.025297074954296166, "relative": 0.025297074954296166, "se": 0.0007377070084080333}, {"from_party": "Socialdemokratiet", "to_party": "Borgernes Parti", "count": 0.00010664229128580139, "relative": 0.00010664229128580139, "se": 4.117020020980658e-05}, {"from_party": "Socialdemokratiet", "to_party": "Danmarksdemokraterne", "count": 0.00022242535039610005, "relative": 0.00022242535039610005, "se": 6.622655338917156e-05}, {"from_party": "Socialdemokratiet", "to_party": "Dansk Folkeparti", "count": 0.0005484460694698358, "relative": 0.0005484460694698358, "se": 0.00010312176870525896}, {"from_party": "Socialdemokratiet", "to_party": "Enhedslisten", "count": 0.005498171846435101, "relative": 0.005498171846435101, "se": 0.00030934329116888003}, {"from_party": "Socialdemokratiet", "to_party": "Konservative", "count": 0.013078175328632374, "relative": 0.013078175328632374, "se": 0.0005111099618824318}, {"from_party": "Socialdemokratiet", "to_party": "Liberal Alliance", "count": 1.8281535648994527e-05, "relative": 1.8281535648994527e-05, "se": 1.8281535648994523e-05}, {"from_party": "Socialdemokratiet", "to_party": "Moderaterne", "count": 0.008333638025594153, "relative": 0.008333638025594153, "se": 0.00038079760937844516}, {"from_party": "Socialdemokratiet", "to_party": "Radikale Venstre", "count": 0.07275045703839124, "relative": 0.07275045703839124, "se": 0.0010686491123714195}, {"from_party": "Socialdemokratiet", "to_party": "SF", "count": 0.08715600243753813, "relative": 0.08715600243753813, "se": 0.0011056957429812068}, {"from_party": "Socialdemokratiet", "to_party": "Socialdemokratiet", "count": 0.7818864803691128, "relative": 0.7818864803691128, "se": 0.0016809965524819098}, {"from_party": "Socialdemokratiet", "to_party": "Uden for parti", "count": 0.0007632541133455212, "relative": 0.0007632541133455212, "se": 0.00010929127645755568}, {"from_party": "Socialdemokratiet", "to_party": "Venstre", "count": 0.004340950639853749, "relative": 0.004340950639853749, "se": 0.00029339684997947913}, {"from_party": "Uden for parti", "to_party": "Alternativet", "count": 0.3025, "relative": 0.3025, "se": 0.03303008100811922}, {"from_party": "Uden for parti", "to_party": "Borgernes Parti", "count": 0.07, "relative": 0.07, "se": 0.018829377433825435}, {"from_party": "Uden for parti", "to_party": "Danmarksdemokraterne", "count": 0.005, "relative": 0.005, "se": 0.004999999999999999}, {"from_party": "Uden for parti", "to_party": "Dansk Folkeparti", "count": 0.03, "relative": 0.03, "se": 0.011934162828797102}, {"from_party": "Uden for parti", "to_party": "Enhedslisten", "count": 0.065, "relative": 0.065, "se": 0.016899883449481554}, {"from_party": "Uden for parti", "to_party": "Konservative", "count": 0.035, "relative": 0.035, "se": 0.01282161999881214}, {"from_party": "Uden for parti", "to_party": "Liberal Alliance", "count": 0.01, "relative": 0.01, "se": 0.007035264706814484}, {"from_party": "Uden for parti", "to_party": "Moderaterne", "count": 0.01, "relative": 0.01, "se": 0.007035264706814484}, {"from_party": "Uden for parti", "to_party": "Radikale Venstre", "count": 0.3341666666666667, "relative": 0.3341666666666667, "se": 0.03538498781282861}, {"from_party": "Uden for parti", "to_party": "SF", "count": 0.045, "relative": 0.045, "se": 0.013935276071607595}, {"from_party": "Uden for parti", "to_party": "Socialdemokratiet", "count": 0.06833333333333334, "relative": 0.06833333333333334, "se": 0.018516077280167034}, {"from_party": "Uden for parti", "to_party": "Uden for parti", "count": 0.025, "relative": 0.025, "se": 0.010359692675134351}, {"from_party": "Uden for parti", "to_party": "Venstre", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Venstre", "to_party": "Alternativet", "count": 0.0006719367588932805, "relative": 0.0006719367588932805, "se": 0.00015695072748865443}, {"from_party": "Venstre", "to_party": "Borgernes Parti", "count": 0.008955862977602105, "relative": 0.008955862977602105, "se": 0.0005264203126528863}, {"from_party": "Venstre", "to_party": "Danmarksdemokraterne", "count": 0.009970355731225294, "relative": 0.009970355731225294, "se": 0.0005717103188350601}, {"from_party": "Venstre", "to_party": "Dansk Folkeparti", "count": 0.0008399209486166008, "relative": 0.0008399209486166008, "se": 0.0001824853989744692}, {"from_party": "Venstre", "to_party": "Enhedslisten", "count": 3.952569169960472e-05, "relative": 3.952569169960472e-05, "se": 3.952569169960472e-05}, {"from_party": "Venstre", "to_party": "Konservative", "count": 0.13455467720685113, "relative": 0.13455467720685113, "se": 0.0019289583687214444}, {"from_party": "Venstre", "to_party": "Liberal Alliance", "count": 0.03657114624505928, "relative": 0.03657114624505928, "se": 0.0012052175284057508}, {"from_party": "Venstre", "to_party": "Moderaterne", "count": 0.0429927536231884, "relative": 0.0429927536231884, "se": 0.00133192829470831}, {"from_party": "Venstre", "to_party": "Radikale Venstre", "count": 0.0044202898550724625, "relative": 0.0044202898550724625, "se": 0.00047755174029725156}, {"from_party": "Venstre", "to_party": "SF", "count": 0.0005138339920948616, "relative": 0.0005138339920948616, "se": 0.0001275531576161227}, {"from_party": "Venstre", "to_party": "Socialdemokratiet", "count": 0.013830698287220024, "relative": 0.013830698287220024, "se": 0.0007780991595695774}, {"from_party": "Venstre", "to_party": "Uden for parti", "count": 0.0, "relative": 0.0, "se": 0.0}, {"from_party": "Venstre", "to_party": "Venstre", "count": 0.746638998682477, "relative": 0.746638998682477, "se": 0.002915445388036254}];
+    const leftParties = ["Alternativet", "Borgernes Parti", "Danmarksdemokraterne", "Dansk Folkeparti", "Enhedslisten", "Konservative", "Liberal Alliance", "Moderaterne", "Radikale Venstre", "SF", "Socialdemokratiet", "Uden for parti", "Venstre"];
+    const colorMap = {"Socialdemokratiet": "#A82721", "Venstre": "#254264", "SF": "#E07EA8", "Enhedslisten": "#E6801A", "Radikale Venstre": "#733280", "Dansk Folkeparti": "#EAC73E", "Alternativet": "#2B8738", "Danmarksdemokraterne": "#7896D2", "Konservative": "#96B226", "Liberal Alliance": "#3FB2BE", "Moderaterne": "#B48CD2", "Borgernes Parti": "#5FC8B4", "Uden for parti": "#b9b9b9"};
+
+    function getColor(p) { return colorMap[p] || "#888"; }
+
+    const svgEl = document.getElementById("chart");
+    const tooltip = document.getElementById("tooltip");
+
+    const width = 900;
+    const nodeH = 28, pad = 16;
+    const leftX = 220, rightX = width - 220;
+
+    let activeParty = null;
+
+    function getRightOrder(party) {
+    const totals = {};
+    data.forEach(d => {
+        if (!party || d.from_party === party) {
+        totals[d.to_party] = (totals[d.to_party] || 0) + d.count;
+        }
+    });
+    return Object.entries(totals)
+        .sort((a, b) => b[1] - a[1])
+        .map(e => e[0]);
+    }
+
+    function getYCenters(n, height) {
+    const totalH = n * nodeH + (n - 1) * pad;
+    const startY = (height - totalH) / 2;
+    return Array.from({length: n}, (_, i) => startY + i * (nodeH + pad) + nodeH / 2);
+    }
+
+    function getRightPct(party, toParty) {
+    const relevant = data.filter(d => !party || d.from_party === party);
+    const total = relevant.reduce((s, d) => s + d.count, 0);
+    const sub = relevant.filter(d => d.to_party === toParty).reduce((s, d) => s + d.count, 0);
+    if (total === 0) return "0%";
+    const pct = sub / total * 100;
+    return (pct % 1 === 0 ? pct.toFixed(0) : pct.toFixed(1)) + "%";
+    }
+
+    function draw() {
+    svgEl.innerHTML = "";
+    const rightOrder = getRightOrder(activeParty);
+    const nLeft = leftParties.length;
+    const nRight = rightOrder.length;
+    const height = Math.max(nLeft, nRight) * (nodeH + pad) + 60;
+    svgEl.setAttribute("width", width);
+    svgEl.setAttribute("height", height);
+    svgEl.setAttribute("viewBox", `0 0 ${width} ${height}`);
+
+    const leftYArr = getYCenters(nLeft, height);
+    const rightYArr = getYCenters(nRight, height);
+    const leftYMap = Object.fromEntries(leftParties.map((p, i) => [p, leftYArr[i]]));
+    const rightYMap = Object.fromEntries(rightOrder.map((p, i) => [p, rightYArr[i]]));
+
+    // Links
+    data.forEach(d => {
+        const sy = leftYMap[d.from_party];
+        const ty = rightYMap[d.to_party];
+        if (sy === undefined || ty === undefined) return;
+        if (activeParty && d.from_party !== activeParty) return;
+        const strokeW = Math.max(1, d.relative * nodeH);
+        const color = "#aaaaaa";
+        const cx = (leftX + rightX) / 2;
+
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", `M${leftX},${sy} C${cx},${sy} ${cx},${ty} ${rightX},${ty}`);
+        path.setAttribute("class", "link");
+        path.setAttribute("stroke", color);
+        path.setAttribute("stroke-width", strokeW);
+        path.setAttribute("opacity", "0.6");
+
+        path.addEventListener("mousemove", e => {
+        const pct = (d.relative * 100).toFixed(1);
+        const se = (d.se * 100).toFixed(1);
+        tooltip.style.display = "block";
+        tooltip.style.left = (e.clientX + 12) + "px";
+        tooltip.style.top = (e.clientY - 28) + "px";
+        tooltip.textContent = `${d.from_party} → ${d.to_party}: ${pct}% (±${se}% SE)`;
+        });
+        path.addEventListener("mouseleave", () => { tooltip.style.display = "none"; });
+        svgEl.appendChild(path);
+    });
+
+    // Left nodes
+    leftParties.forEach((p, i) => {
+        const cy = leftYArr[i];
+        const color = getColor(p);
+
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", leftX - 14);
+        rect.setAttribute("y", cy - nodeH / 2);
+        rect.setAttribute("width", 10);
+        rect.setAttribute("height", nodeH);
+        rect.setAttribute("fill", color);
+        svgEl.appendChild(rect);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", leftX - 20);
+        label.setAttribute("y", cy);
+        label.setAttribute("text-anchor", "end");
+        label.setAttribute("class", "node-label");
+        label.setAttribute("font-weight", activeParty === p ? "bold" : "normal");
+        label.textContent = p;
+        label.addEventListener("mousemove", e => {
+        tooltip.style.display = "block";
+        tooltip.style.left = (e.clientX + 12) + "px";
+        tooltip.style.top = (e.clientY - 28) + "px";
+        tooltip.textContent = `${p}`;
+        });
+        label.addEventListener("mouseleave", () => { tooltip.style.display = "none"; });
+        svgEl.appendChild(label);
+    });
+
+    // Right nodes
+    rightOrder.forEach((p, i) => {
+        const cy = rightYArr[i];
+        const color = getColor(p);
+        const pct = getRightPct(activeParty, p);
+
+        const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        rect.setAttribute("x", rightX + 4);
+        rect.setAttribute("y", cy - nodeH / 2);
+        rect.setAttribute("width", 10);
+        rect.setAttribute("height", nodeH);
+        rect.setAttribute("fill", color);
+        svgEl.appendChild(rect);
+
+        const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        label.setAttribute("x", rightX + 20);
+        label.setAttribute("y", cy);
+        label.setAttribute("text-anchor", "start");
+        label.setAttribute("class", "node-label");
+        label.textContent = p;
+        label.addEventListener("mousemove", e => {
+        tooltip.style.display = "block";
+        tooltip.style.left = (e.clientX + 12) + "px";
+        tooltip.style.top = (e.clientY - 28) + "px";
+        tooltip.textContent = p;
+        });
+        label.addEventListener("mouseleave", () => { tooltip.style.display = "none"; });
+        svgEl.appendChild(label);
+
+        const pctLabel = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        pctLabel.setAttribute("x", width - 10);
+        pctLabel.setAttribute("y", cy);
+        pctLabel.setAttribute("text-anchor", "end");
+        pctLabel.setAttribute("class", "pct-label");
+        pctLabel.textContent = pct;
+        svgEl.appendChild(pctLabel);
+    });
+    }
+
+    // Buttons
+    const controls = document.getElementById("controls");
+    leftParties.forEach(p => {
+    const btn = document.createElement("button");
+    btn.textContent = p;
+    btn.className = "party-btn";
+    btn.style.borderColor = getColor(p);
+    btn.onclick = () => {
+        if (activeParty === p) {
+        activeParty = null;
+        btn.classList.remove("active");
+        btn.style.background = "white";
+        btn.style.color = "black";
+        } else {
+        activeParty = p;
+        document.querySelectorAll(".party-btn").forEach(b => {
+            b.classList.remove("active");
+            b.style.background = "white";
+            b.style.color = "black";
+        });
+        btn.classList.add("active");
+        btn.style.background = getColor(p);
+        btn.style.color = "white";
+        }
+        draw();
+    };
+    controls.appendChild(btn);
+    });
+
+    draw();
+    </script>
+    </body>
+    </html>
