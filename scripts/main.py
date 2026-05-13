@@ -23,15 +23,7 @@ class MasterFunction:
     def __init__(
         self,
         dataset="../data/raw/FV_26_Thomas_Christian.xlsx",
-        alpha_values=[
-            0.25,
-            0.5,
-            0.75,
-            1,
-            1.5,
-            2.0,
-            3.0,
-        ],
+        alpha_values=[0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0],
         election_results_path="../data/interim/fv_results_26.csv",
         sample_fraction=None,
         sample_n=2500,
@@ -42,7 +34,7 @@ class MasterFunction:
         n_matches=10,
         random_state=42,
         baseline_alpha=1,
-        simulations=1,
+        simulations=100,
     ):
         self.dataset = dataset
         self.alpha_values = alpha_values
@@ -379,7 +371,7 @@ class MasterFunction:
         for simulation in range(self.simulations):
             print(f"Running simulation {simulation + 1}/{self.simulations}...")
             sim_random_state = self.random_state + simulation * (
-                self.noise_iterations + 1
+                self.noise_iterations + 1 if self.noise_iterations is not None else 1
             )
 
             distance_analysis = DistanceAnalysis(
@@ -759,8 +751,6 @@ class MasterFunction:
         plotter.alpha_comparison_diff_vote_shares()
         plotter.alpha_comparison_relative_change()
         plotter.alpha_comparison_relative_change_per_party()
-        plotter.alpha_comparison_relative_change_absolute()
-        plotter.alpha_comparison_relative_change_per_party_absolute()
         plotter.alpha_comparison_voter_retention_all_parties(switch_matrix_summary)
         plotter.alpha_comparison_voter_retention_per_party(switch_matrix_summary)
         plotter.relative_match_confidence_intervals()
