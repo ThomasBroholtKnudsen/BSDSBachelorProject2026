@@ -1,0 +1,15 @@
+Dataset: ../data/raw/FV_26_Thomas_Christian.xlsx
+Alpha values: [1.0]
+Election type: FV
+Election results path: ../data/interim/fv_results_26.csv
+Sample fraction: 1
+Sample n: 500
+Sample type: random_generated
+Noise levels: [0.0]
+Noise iterations: 1
+Noise rounds per question: 4
+Number of matches: 5
+Analysis type: distance_multiple_sim
+Random state: 42
+Baseline alpha: 1
+Simulations: 1
